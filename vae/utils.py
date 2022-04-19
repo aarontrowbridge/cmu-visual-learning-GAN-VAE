@@ -42,6 +42,16 @@ def avg_dict(all_metrics):
         avg_metrics[key] = np.mean([all_metrics[i][key].cpu().detach().numpy() for i in range(len(all_metrics))])
     return avg_metrics
 
+# plot side by side plots of recon loss and kl loss
+def plot_metrics(recon_losses, kl_losses, log_dir):
+    fig, axs = plt.subplots(1, 2, figsize=(10, 5))
+    axs[0].plot(recon_losses)
+    axs[0].set_title('Reconstruction Loss')
+    axs[1].plot(kl_losses)
+    axs[1].set_title('KL Loss')
+    plt.savefig('data/' + log_dir + '/vae_metrics.png')
+    plt.close()
+
 def save_samples(samples, fname, nrow=6, title='Samples'):
     samples = (torch.FloatTensor(samples) / 255.).permute(0, 3, 1, 2)
     grid_img = make_grid(samples, nrow=nrow)
@@ -50,6 +60,7 @@ def save_samples(samples, fname, nrow=6, title='Samples'):
     plt.imshow(grid_img.permute(1, 2, 0))
     plt.tight_layout()
     plt.savefig(fname)
+    plt.close()
 
 def vis_samples(model, _file, num_samples = 49):
       

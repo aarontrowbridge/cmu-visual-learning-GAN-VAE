@@ -37,8 +37,9 @@ class Encoder(nn.Module):
 
     def forward(self, x):
         #TODO 2.1.1 : forward pass through the network, output should be of dimension : self.latent_dim
-        z = self.convs(x)
-        z = self.fc(z)
+        h = self.convs(x)
+        h = h.reshape(h.shape[0], -1)
+        z = self.fc(h)
         return z
 
 
@@ -49,14 +50,14 @@ class VAEEncoder(Encoder):
         #TODO: maybe add a compressive nonlinearity?
         self.fc = nn.Linear(self.conv_out_dim, 2*self.latent_dim) 
 
-    
     def forward(self, x):
         #TODO 2.2.1: forward pass through the network.
         # should return a tuple of 2 tensors, each of dimension self.latent_dim
-        z = self.convs(x)
-        z = self.fc(z)
-        mean = z[:, :self.latent_dim]
-        logvar = z[:, self.latent_dim:]
+        h = self.convs(x)
+        h = h.reshape(h.shape[0], -1)
+        h = self.fc(h)
+        mean = h[:, :self.latent_dim]
+        logvar = h[:, self.latent_dim:]
         return mean, logvar
 
 
@@ -67,8 +68,8 @@ class Decoder(nn.Module):
         self.output_shape = output_shape
 
         #TODO 2.1.1: fill in self.base_size
-        self.base_size = np.prod(output_shape[1:])
-        self.fc = nn.Linear(latent_dim, np.prod(self.base_size))
+        self.base_size = 2048
+        self.fc = nn.Linear(latent_dim, self.base_size)
         
         """
         TODO 2.1.1 : Fill in self.deconvs following the given architecture 
@@ -96,9 +97,9 @@ class Decoder(nn.Module):
 
     def forward(self, z):
         #TODO 2.1.1: forward pass through the network, first through self.fc, then self.deconvs.
-        z = self.fc(z)
-        z = 
-        x = self.deconvs(z)
+        h = self.fc(z)
+        h = h.reshape(-1, 128, 4, 4) 
+        x = self.deconvs(h)
         return x
 
 class AEModel(nn.Module):
