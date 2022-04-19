@@ -4,3 +4,4 @@ gan/data_wgan_gp/
 gan/datasets/
 
 __pycache__
+data/cifar-10-python.tar.gz
